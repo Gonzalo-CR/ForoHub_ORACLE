@@ -1,14 +1,18 @@
 package com.foro.api.controller;
 
 import com.foro.api.domain.respuesta.*;
+import com.foro.api.service.RespuestaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import com.foro.api.domain.respuesta.DatosRespuestaRespuesta;
 
 @RestController
 @RequestMapping("/respuestas")
@@ -16,14 +20,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class RespuestaController {
 
     @Autowired
+    private RespuestaService respuestaService;
+
+    @Autowired
     private RespuestaRepository respuestaRepository;
 
     @PostMapping
     @Transactional
-    @Operation(summary = "Registra una nueva respuesta")
     public ResponseEntity registrar(@RequestBody @Valid DatosRegistroRespuesta datos,
                                     UriComponentsBuilder uriBuilder) {
-        var respuesta = new Respuesta(datos);
+        var respuesta = respuestaService.crearRespuesta(datos);
         respuestaRepository.save(respuesta);
 
         var uri = uriBuilder.path("/respuestas/{id}").buildAndExpand(respuesta.getId()).toUri();
@@ -32,9 +38,17 @@ public class RespuestaController {
 
     @GetMapping
     @Operation(summary = "Lista todas las respuestas de un tópico")
-    public ResponseEntity<List<DatosRespuestaRespuesta>> listar(@RequestParam Long topicoId) {
-        var respuestas = respuestaRepository.findByTopicoIdAndActivoTrue(topicoId)
-                .stream().map(DatosRespuestaRespuesta::new).toList();
-        return ResponseEntity.ok(respuestas);
+    public ResponseEntity<List<DatosRespuestaRespuesta>> listar(@RequestParam(name = "topico_id") Long topicoId) {
+        List<Respuesta> respuestas = respuestaRepository.findByTopicoIdAndActivoTrue(topicoId);
+
+        if (respuestas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        var datosRespuestas = respuestas.stream()
+                .map(DatosRespuestaRespuesta::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(datosRespuestas);
     }
 }

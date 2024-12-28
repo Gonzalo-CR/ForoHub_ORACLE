@@ -2,24 +2,20 @@ package com.foro.api.domain.topico;
 
 import java.time.LocalDateTime;
 
-public record DatosRespuestaTopico(
+public record DatosListadoTopico(
         Long id,
         String titulo,
         String mensaje,
         LocalDateTime fechaCreacion,
-        StatusTopico status,
-        String autor,
-        String curso
+        StatusTopico status
 ) {
-    public DatosRespuestaTopico(Topico topico) {
+    public DatosListadoTopico(Topico topico) {
         this(
                 topico.getId(),
                 topico.getTitulo(),
                 topico.getMensaje(),
                 topico.getFechaCreacion(),
-                topico.getStatus(),
-                topico.getAutor().getNombre(),
-                topico.getCurso().getNombre()
+                topico.getStatus()
         );
     }
 }
