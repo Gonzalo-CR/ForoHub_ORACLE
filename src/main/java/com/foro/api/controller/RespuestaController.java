@@ -3,6 +3,7 @@ package com.foro.api.controller;
 import com.foro.api.domain.respuesta.*;
 import com.foro.api.service.RespuestaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import com.foro.api.domain.respuesta.DatosRespuestaRespuesta;
 
 @RestController
 @RequestMapping("/respuestas")
+@SecurityRequirement(name = "bearer-key")
 @Tag(name = "Respuestas", description = "Gestión de respuestas del foro")
 public class RespuestaController {
 

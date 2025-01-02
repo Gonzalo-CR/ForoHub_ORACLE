@@ -2,6 +2,7 @@ package com.foro.api.controller;
 
 import com.foro.api.domain.usuario.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/usuarios")
+@SecurityRequirement(name = "bearer-key")
 @Tag(name = "Usuarios", description = "Gestión de usuarios del foro")
 public class UsuarioController {
 
@@ -27,10 +29,10 @@ public class UsuarioController {
     @PostMapping
     @Transactional
     @Operation(summary = "Registra un nuevo usuario")
-    public ResponseEntity registrar(@RequestBody @Valid DatosRegistroUsuario datos,
+    public ResponseEntity registrar(@RequestBody @Valid DatosRegistroUsuario datosRegistroUsuario,
                                     UriComponentsBuilder uriBuilder) {
-        var usuario = new Usuario(datos);
-        usuario.setPassword(passwordEncoder.encode(datos.password()));
+        var usuario = new Usuario(datosRegistroUsuario);
+        usuario.setPassword(passwordEncoder.encode(datosRegistroUsuario.password()));
         usuarioRepository.save(usuario);
 
         var uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();

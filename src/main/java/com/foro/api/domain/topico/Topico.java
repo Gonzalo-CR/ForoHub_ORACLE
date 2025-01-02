@@ -4,7 +4,6 @@ import com.foro.api.domain.usuario.Usuario;
 import com.foro.api.domain.curso.Curso;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,6 +39,13 @@ public class Topico {
 
     private Boolean activo = true;
 
+    @PrePersist
+    private void prePersist() {
+        this.fechaCreacion = LocalDateTime.now();
+        this.status = StatusTopico.NO_RESPONDIDO;
+        this.activo = true;
+    }
+
     public Topico(DatosRegistroTopico datos) {
         this.titulo = datos.titulo();
         this.mensaje = datos.mensaje();
@@ -48,6 +54,7 @@ public class Topico {
         this.activo = true;
         this.fechaCreacion = LocalDateTime.now();
     }
+
 
 //    public Topico(@NotNull(message = "El ID del tópico es obligatorio") Long aLong) {
 //    }
